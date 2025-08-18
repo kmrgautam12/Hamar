@@ -47,6 +47,11 @@ func (d *dbCred) DBProvisioningPipeline() error {
 		log.Fatal(err)
 		return err
 	}
+	err = d.CreateUserTable()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
 	return nil
 }
 
@@ -109,4 +114,23 @@ func (d *dbCred) assignPermissionToRoles() error {
 		return err
 	}
 	return nil
+}
+func (d *dbCred) CreateUserTable() error {
+	schema := `CREATE TABLE users (
+    user_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- or SERIAL if UUID not supported
+    username        VARCHAR(150) UNIQUE NOT NULL,
+    password_hash   TEXT NOT NULL,
+    access_level    VARCHAR(50) NOT NULL CHECK (access_level IN ('admin', 'user', 'owner')),
+    email           VARCHAR(255) UNIQUE,
+    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	)`
+	_, err := d.db.Exec(schema)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
+
 }
