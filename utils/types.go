@@ -1,4 +1,4 @@
-package apis
+package utils
 
 type UsersRequest struct {
 	UserName    string `json:"username" validate:"required,min=5,max=128"`

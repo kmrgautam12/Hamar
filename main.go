@@ -7,7 +7,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var e = echo.New()
+var e = &apis.E{
+	Cho: echo.New(),
+	DB:  database.CreateDBConnectionPool(),
+}
 
 func init() {
 	err := database.CheckProvisioning().DBProvisioningPipeline()
@@ -17,7 +20,7 @@ func init() {
 }
 
 func main() {
-	e.Logger.Info("Startup application finished")
+	e.Cho.Logger.Info("Startup application finished")
 	apis.RegisterRoutes(e)
-	e.Start(":8080")
+	e.Cho.Start(":8080")
 }
